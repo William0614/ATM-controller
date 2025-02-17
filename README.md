@@ -1,34 +1,36 @@
-#ATM Controller with Bank API
+# ATM Controller with Bank API
 
-##Overview:
+## Overview:
 An ATM simulator that connects to dummy bank API to do user authentication, account management, and basic transactions.
 
-##Key Components:
+## Key Components:
 - Account: Represents a bank account with operations.
 - BankAPI: Validates user authentication, account search, and process transactions.
 - ATM: A central interface that manages user interactions, including inserting card, entering PIN, selecting an account, checking balance, and withdrawing funds.
 
-##Features:
+## Features:
 - Card insertion
 - PIN authentication
 - Check account balance
 - Make deposit
 - Make withdrawal
 
-##INSTALLATION INSTRUCTIONS
-###Prerequisistes:
+## INSTALLATION INSTRUCTIONS
+### Prerequisistes:
 - C++ compiler (GCC, Clang)
 - CMake
 - GoogleTest for unit testing
 
-###BUILD INSTRUCTIONS:
-  '''mkdir build
+### BUILD INSTRUCTIONS:
+```
+  mkdir build
   cd builld
   cmake ..
-  make'''
+  make
+```
 
 ###To RUN:
-1. Run the compiled executable: '''./ATM'''
+1. Run the compiled executable: ```./ATM```
 2. Insert card and verify PIN
 3. Select an account.
 4. Perform transactions
@@ -36,4 +38,4 @@ An ATM simulator that connects to dummy bank API to do user authentication, acco
 
 ###Testing:
 Run unit tests:
-'''./runTests'''
+```./runTests```
