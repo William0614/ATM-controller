@@ -1,106 +1,65 @@
 #include "../include/atm.h"
-#include <cctype>
+#include "../include/bankAPI.h"
+#include <stdexcept>
 #include <iostream>
-#include <vector>
 
-ATM::ATM(BankAPI* bankAPI) : bank(bankAPI), insertedCard(nullptr), selectedAccount(nullptr) {}
+ATM::ATM(BankAPI* bankAPI) : bankAPI(bankAPI), currentCard(nullptr), currentAccount("") {}
 
 void ATM::insertCard(Card* card) {
-    if (insertedCard) {
-        std::cout << "Card already inserted.\n";
-        return;
-    }
-    insertedCard = card;
-    std::cout << "Card inserted. Enter your PIN.\n";
+    currentCard = card;
 }
 
-
-bool ATM::enterPin(std::string pin) {
-    // Check if PIN is valid.
-    for (char c : pin) {
-        if (!isdigit(c)) {
-            std::cout << "Invalid PIN. Enter only digits." << std::endl;
-            return false;
-        }
-    }
-
-    if (bank->verifyPin(insertedCard->getCardNumber(), pin)) return true;
-    return false;
-}
-
-
-bool ATM::selectAccount(std::string accountNumber) {
-    if (!insertedCard) return false;
-
-    std::vector<std::string> accounts = bank->getAccounts(insertedCard->getCardNumber());
-    if (accounts.empty()) return false;
-
-    std::cout << "Select an account:\n";
-    for (size_t i = 0; i < accounts.size(); ++i)
-        std::cout << i + 1 << ". " << accounts[i] << "\n";
-
-    int choice;
-    std::cin >> choice;
-
-    if (choice < 1 || choice > accounts.size()) return false;
-
-    selectedAccount = bank->getAccount(accounts[choice - 1]);
-    return true;
-}
-
-std::vector<std::string> ATM::getLinkedAccounts() {
-    if (!insertedCard) {
-        std::cout << "No card inserted.\n";
-        return {};
-    }
-    return bank->getAccountsForCard(insertedCard->getCardNumber());
-}
-
-int ATM::checkBalance() {
-    if (!selectedAccount) return -1;
-    return selectedAccount->getBalance();
-}
-
-void ATM::deposit(int amount) {
-    if (!selectedAccount || amount <= 0) return;
-    selectedAccount->deposit(amount);
-}
-
-bool ATM::withdraw(int amount) {
-    if (!selectedAccount || amount <= 0) return false;
-    return selectedAccount->withdraw(amount);
+bool ATM::isCardInserted() {
+    return currentCard != nullptr;
 }
 
 void ATM::ejectCard() {
-    insertedCard = nullptr;
-    selectedAccount = nullptr;
+    currentCard = nullptr;
+    currentAccount = "";
 }
 
-// CLI Menu
-// void ATM::showATMMenu() {
-//     int choice;
-//     std::string pin;
-//     int amount;
+bool ATM::enterPin(const std::string& pin) {
+    return bankAPI->verifyPin(currentCard->getCardNumber(), pin);
+}
 
-//     while (true) {
-//         std::cout << "\n===== ATM Menu =====\n";
-//         std::cout << "1. Insert Card\n";
-//         std::cout << "2. Enter PIN\n";
-//         std::cout << "3. Select Account\n";
-//         std::cout << "4. Check Balance\n";
-//         std::cout << "5. Deposit\n";
-//         std::cout << "6. Withdraw\n";
-//         std::cout << "7. Eject Card\n";
-//         std::cout << "8. Exit\n";
-//         std::cin >> choice;
+void ATM::selectAccount(const std::string& accountNumber) {
+    currentAccount = accountNumber;
+}
 
-//         if (choice == 8) break;
-//         if (choice == 1) insertCard(new Card("123456"));
-//         if (choice == 2) { std::cin >> pin; enterPin(pin); }
-//         if (choice == 3) selectAccount(std::string("ACC1001"));
-//         if (choice == 4) std::cout << "Balance: $" << checkBalance() << "\n";
-//         if (choice == 5) { std::cin >> amount; deposit(amount); }
-//         if (choice == 6) { std::cin >> amount; withdraw(amount); }
-//         if (choice == 7) ejectCard();
-//     }
-// }
+int ATM::checkBalance() const {
+    return bankAPI->getBalance(currentAccount);
+}
+
+void ATM::deposit(int amount) {
+    std::cout << "Before deposit: " << checkBalance() << " dollars.\n";
+    bankAPI->deposit(currentAccount, amount);
+    std::cout << "After deposit: " << checkBalance() << " dollars.\n";
+}
+
+void ATM::withdraw(int amount) {
+    std::cout << "Before withdrawal: " << checkBalance() << " dollars.\n";
+    if (bankAPI->withdraw(currentAccount, amount)) {
+        std::cout << "After withdrawal: " << checkBalance() << " dollars.\n";
+    } else {
+        std::cout << "Insufficient funds.\n";
+    }
+}
+
+std::vector<std::string> ATM::getLinkedAccounts() {
+    if (currentCard != nullptr) {
+        std::vector<Account> accounts = bankAPI->getAccountsForCard(currentCard->getCardNumber());
+        std::vector<std::string> accountNumbers;
+        for (const auto& account : accounts) {
+            accountNumbers.push_back(account.getAccountNumber());
+        }
+        return accountNumbers;
+    }
+    return {};
+}
+
+Account* ATM::getSelectedAccount() {
+    if (!currentAccount.empty()) {
+        return bankAPI->getAccountByNumber(currentAccount); 
+    }
+    return nullptr; 
+}

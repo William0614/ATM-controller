@@ -4,12 +4,13 @@
 #include <string>
 
 class Card {
+public:
+    explicit Card(const std::string& cardNumber);
+
+    std::string getCardNumber() const;
+
 private:
     std::string cardNumber;
-
-public:
-    Card(std::string cardNum);
-    std::string getCardNumber() const;
 };
 
-#endif
+#endif // CARD_H

@@ -1,22 +1,23 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include <iostream>
+#include <string>
+#include <stdexcept>
 
 class Account {
+public:
+    Account() : accountNumber(""), balance(0) {}
+    Account(const std::string& accountNumber, int balance);
+
+    std::string getAccountNumber() const;
+    int getBalance() const;
+
+    void deposit(int amount);
+    void withdraw(int amount);
+
 private:
     std::string accountNumber;
     int balance;
-
-public:
-    Account() : accountNumber(""), balance(0) {}
-    Account(std::string accNum, int initialBalance);
-    
-    std::string getAccountNumber() const;
-    int getBalance() const;
-    
-    void deposit(int amount);
-    bool withdraw(int amount);
 };
 
-#endif
+#endif // ACCOUNT_H

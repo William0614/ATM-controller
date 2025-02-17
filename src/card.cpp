@@ -1,6 +1,6 @@
 #include "../include/card.h"
 
-Card::Card(std::string cardNum) : cardNumber(cardNum) {}
+Card::Card(const std::string& cardNumber) : cardNumber(cardNumber) {}
 
 std::string Card::getCardNumber() const {
     return cardNumber;

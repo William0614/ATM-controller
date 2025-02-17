@@ -1,29 +1,36 @@
 #ifndef ATM_H
 #define ATM_H
 
-#include <iostream>
+#include <string>
+#include <vector>
+#include "card.h"
 #include "account.h"
+#include "bankAPI.h"
+
+#include <vector>
+#include <string>
 #include "card.h"
 #include "bankAPI.h"
 
 class ATM {
-private:
-    BankAPI* bank;
-    Card* insertedCard;
-    Account* selectedAccount;
-
 public:
     ATM(BankAPI* bankAPI);
-
     void insertCard(Card* card);
-    bool enterPin(std::string pin);
-    bool selectAccount(std::string accountNumber);
-    int checkBalance();
+    bool enterPin(const std::string& pin);
+    void selectAccount(const std::string& accountNumber);
+    int  checkBalance() const;
     void deposit(int amount);
-    bool withdraw(int amount);
+    void withdraw(int amount);
     void ejectCard();
+    bool isCardInserted();
+    
     std::vector<std::string> getLinkedAccounts();
-    void showATMMenu();
+    Account* getSelectedAccount();
+
+private:
+    BankAPI* bankAPI;
+    Card* currentCard;
+    std::string currentAccount;
 };
 
-#endif
+#endif // ATM_H
