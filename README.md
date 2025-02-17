@@ -21,6 +21,12 @@ An ATM simulator that connects to dummy bank API to do user authentication, acco
 - CMake
 - GoogleTest for unit testing
 
+### How to Clone:
+```
+  git clone git@github.com:William0614/ATM-controller.git
+  cd ATM-controller
+```
+
 ### BUILD INSTRUCTIONS:
 ```
   mkdir build
